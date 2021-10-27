@@ -2,12 +2,15 @@ package thongphungvan.FinalExam;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -71,5 +74,92 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+    //TẠO TABLE
+    private void docreattable() {
+        String sql1="CREATE TABLE tablehang ("+
+                "mahang TEXT primary key,"+
+                "tenhang TEXT,"+
+                "soluong INTEGER,"+
+                "dongia INTEGER)";
+        database1.execSQL(sql1);
+    }
+
+    // Insert
+    private void doinsertrecordtolop() {
+        String mahang = edtMaHang.getText().toString();
+        String tenhang = edtTenHang.getText().toString();
+        String soluong = edtSoLuong.getText().toString();
+        String dongia = edtDonGia.getText().toString();
+        ContentValues values=new ContentValues();
+        values.put("mahang", mahang);
+        values.put("tenhang", tenhang);
+        values.put("soluong", soluong);
+        values.put("dongia", dongia);
+        String msg="";
+        if(database1.insert("tablehang", null, values)==-1){
+            msg="Failed to insert record";
+        }
+        else{
+            msg="Insert record is successful";
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    // DELETE ROW
+    private void deleterowLop() {
+        String mahang = edtMaHang.getText().toString();
+        int d = database1.delete("tablehang", "mahang =?", new String[]{mahang});
+        String msg = "";
+        if (d ==0)
+        {
+            msg ="Delete Row "+mahang +" Fail";
+        }
+        else
+        {
+            msg ="Delete Row "+mahang +" Sucessful";
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    // UPDATE ROW
+    private void doupdaterowlop() {
+        String mahang = edtMaHang.getText().toString();
+        String new_tenhang = edtTenHang.getText().toString();
+        String new_soluong = edtSoLuong.getText().toString();
+        String new_dongia = edtDonGia.getText().toString();
+        ContentValues values=new ContentValues();
+        values.put("tenhang", new_tenhang);
+        values.put("soluong", new_soluong);
+        values.put("dongia", new_dongia);
+
+        String msg="";
+        int ret=database1.update("tablehang", values,
+                "mahang=?", new String[]{mahang});
+        if(ret==0){
+            msg="Failed to update";
+        }
+        else{
+            msg="updating is successful";
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    // Query
+    public void querytablelop() {
+        Cursor c = database1.query("tablehang", null, null, null, null, null, null);
+        c.moveToFirst();
+        String data="";
+        while(c.isAfterLast()==false)
+        {
+            data+=c.getString(0)+"-"+
+                    c.getString(1)+"-"+
+                    c.getString(2)+"-"+
+                    c.getString(3);
+            data+="\n";
+            c.moveToNext();
+        }
+        Toast.makeText(this, data, Toast.LENGTH_LONG).show();
+        c.close();
     }
 }
