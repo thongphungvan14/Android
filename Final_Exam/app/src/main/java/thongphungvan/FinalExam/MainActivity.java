@@ -8,15 +8,23 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.android.material.progressindicator.LinearProgressIndicatorSpec;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     Button btnInsert, btnDelete, btnUpdate, btnQuery;
     EditText edtMaHang, edtTenHang, edtSoLuong, edtDonGia;
     SQLiteDatabase database1 = null;
+    ListView ListView1;
+    ArrayList<String> arraylist1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
         edtTenHang = (EditText) findViewById(R.id.edtTenHang);
         edtSoLuong = (EditText) findViewById(R.id.edtSoLuong);
         edtDonGia = (EditText) findViewById(R.id.edtDonGia);
+        ListView1 = (ListView) findViewById(R.id.ListView1);
+        arraylist1 = new ArrayList<>();
+
+
+
+
 
         // Tao database
         database1 = openOrCreateDatabase("qlbanhang.db", MODE_PRIVATE, null);
@@ -147,19 +161,23 @@ public class MainActivity extends AppCompatActivity {
 
     // Query
     public void querytablelop() {
+        arraylist1.clear();
         Cursor c = database1.query("tablehang", null, null, null, null, null, null);
         c.moveToFirst();
         String data="";
         while(c.isAfterLast()==false)
         {
-            data+=c.getString(0)+"-"+
+            data = c.getString(0)+"-"+
                     c.getString(1)+"-"+
                     c.getString(2)+"-"+
                     c.getString(3);
-            data+="\n";
+            arraylist1.add(data);
             c.moveToNext();
         }
-        Toast.makeText(this, data, Toast.LENGTH_LONG).show();
+        ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, arraylist1);
+        ListView1.setAdapter(adapter);
         c.close();
     }
+
+
 }
